@@ -1,11 +1,14 @@
+[variables]
+NEXT_PUBLIC_RAILWAY_API_URL = "https://spartan-bio-validate-production.up.railway.app"
+
 [phases.setup]
-nixPkgs = ["python311", "stdenv.cc.cc.lib", "zlib", "gcc"]
+nixPkgs = ["nodejs"]
 
 [phases.install]
-cmds = [
-    "python3 -m venv /app/.venv",
-    "/app/.venv/bin/pip install -r requirements.txt"
-]
+cmds = ["cd frontend && npm install"]
+
+[phases.build]
+cmds = ["cd frontend && npm run build"]
 
 [start]
-cmd = "LD_LIBRARY_PATH=/nix/var/nix/profiles/default/lib /app/.venv/bin/python -m uvicorn agents.overseer.main:app --host 0.0.0.0 --port ${PORT:-8000}"
+cmd = "cd frontend && npm run start"

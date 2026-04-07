@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React, { useRef, useMemo } from 'react';
 import { Canvas, useFrame } from '@react-three/fiber';
 import { OrbitControls, Sphere, Line } from '@react-three/drei';
 import * as THREE from 'three';
@@ -26,8 +26,10 @@ const CubicGrid = () => {
     }
   });
 
-  const boxGeometry = new THREE.BoxGeometry(4, 4, 4);
-  const edges = new THREE.EdgesGeometry(boxGeometry);
+  const edges = useMemo(() => {
+    const boxGeometry = new THREE.BoxGeometry(4, 4, 4);
+    return new THREE.EdgesGeometry(boxGeometry);
+  }, []);
 
   return (
     <group ref={groupRef}>
