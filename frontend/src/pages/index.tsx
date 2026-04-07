@@ -1,14 +1,16 @@
 import React, { useState } from 'react';
 import Head from 'next/head';
+import dynamic from 'next/dynamic';
+
+const TensorViewer = dynamic(() => import('../components/TensorViewer'), { ssr: false });
 
 export default function Dashboard() {
   const [recordCount, setRecordCount] = useState(1000000);
   const [requiresLazarus, setRequiresLazarus] = useState(true);
   const [requiresFIPS, setRequiresFIPS] = useState(true);
-  const [quote, setQuote] = useState(null);
+  const [quote, setQuote] = useState<number | null>(null);
 
   const calculateQuote = async () => {
-    // In production, this pings your vaas.js endpoint
     let base = recordCount * 0.10;
     if (requiresLazarus) base *= 3;
     if (requiresFIPS) base += 50000;
@@ -19,7 +21,7 @@ export default function Dashboard() {
     <div className="min-h-screen bg-slate-900 text-slate-100 p-8 font-sans">
       <Head><title>Spartan Bio-Validate | OMEGA</title></Head>
       
-      <header className="mb-12 border-b border-slate-700 pb-4">
+      <header className="mb-8 border-b border-slate-700 pb-4">
         <h1 className="text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-indigo-500 to-cyan-400">
           Spartan Bio-Validate v7.0
         </h1>
@@ -27,22 +29,28 @@ export default function Dashboard() {
       </header>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
-        {/* Left Column: KPI Tiles */}
         <div className="space-y-6">
-          <div className="glass-panel p-6 border border-slate-700 rounded-xl bg-slate-800/50">
-            <h3 className="text-sm font-uppercase tracking-wider text-slate-400">Predictive Quality Score</h3>
-            <p className="text-5xl font-bold text-indigo-400 mt-2">99.99%</p>
-            <p className="text-xs text-green-400 mt-2">↑ 0.00% Drift Detected</p>
+          <div className="glass-panel p-1 rounded-xl">
+            <TensorViewer />
+            <div className="p-4 bg-slate-800/80 rounded-b-xl border-t border-slate-700">
+               <p className="text-xs text-cyan-400 font-mono">LIVE TENSOR RENDER: PX-7234491</p>
+               <p className="text-[10px] text-slate-400 font-mono">Coordinates Locked: (1.5, 0, 2.0)</p>
+            </div>
           </div>
-          <div className="glass-panel p-6 border border-slate-700 rounded-xl bg-slate-800/50">
-            <h3 className="text-sm font-uppercase tracking-wider text-slate-400">Lazarus Anomalies Isolated</h3>
-            <p className="text-5xl font-bold text-cyan-400 mt-2">1</p>
-            <p className="text-xs text-slate-400 mt-2">Target: PX-7234491</p>
+          
+          <div className="grid grid-cols-2 gap-4">
+            <div className="glass-panel p-6 border border-slate-700 rounded-xl bg-slate-800/50">
+              <h3 className="text-xs uppercase tracking-wider text-slate-400">Predictive Quality Score</h3>
+              <p className="text-3xl font-bold text-indigo-400 mt-2">99.99%</p>
+            </div>
+            <div className="glass-panel p-6 border border-slate-700 rounded-xl bg-slate-800/50">
+              <h3 className="text-xs uppercase tracking-wider text-slate-400">Anomalies Isolated</h3>
+              <p className="text-3xl font-bold text-cyan-400 mt-2">1</p>
+            </div>
           </div>
         </div>
 
-        {/* Right Column: The Sovereign Broker */}
-        <div className="glass-panel p-8 border border-indigo-500/30 rounded-xl bg-slate-800/80 shadow-2xl shadow-indigo-500/10">
+        <div className="glass-panel p-8 border border-indigo-500/30 rounded-xl bg-slate-800/80 shadow-2xl shadow-indigo-500/10 h-fit">
           <h2 className="text-2xl font-bold mb-6">Sovereign Broker Setup</h2>
           
           <div className="space-y-4">
