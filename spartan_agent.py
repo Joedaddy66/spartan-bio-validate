@@ -10,8 +10,10 @@ import handlers
 import utils
 from protocols import (
     GenomicValidationRequest,
+    GenomicValidationResponse,
     HealthCheck
 )
+from uagents.network.payments import PaymentProtocol
 
 # Setup logging
 logging.basicConfig(
@@ -32,6 +34,10 @@ spartan_agent = Agent(
     endpoint=config.proxy.endpoint if config.proxy.enabled else None
 )
 
+# Initialize Payment Protocol
+# Default price: 0.1 FET per sequence (or customized in handler)
+payment = PaymentProtocol()
+
 logger.info("=" * 60)
 logger.info("🔱 SPARTAN BIO-VALIDATE AGENT STARTING (PROXY MODE)...")
 logger.info(f"👑 Agent Name: {config.agent.name}")
@@ -41,6 +47,9 @@ if config.proxy.enabled:
     logger.info(f"🌐 Proxy Endpoint: {config.proxy.endpoint}")
 logger.info(f"🎯 Railway Backend: {config.railway.url}")
 logger.info("=" * 60)
+
+# Register Protocol
+spartan_agent.include(payment, publish_manifest=True)
 
 # =====================================================================
 # MESSAGE HANDLERS
@@ -120,29 +129,29 @@ async def on_shutdown(ctx: Context):
 # MAIN ENTRY POINT - PROXY MODE SERVER
 # =====================================================================
 
+def get_server():
+    """Create and return the AgentServer instance"""
+    if config.proxy.enabled:
+        server = AgentServer(
+            agent=spartan_agent,
+            host=config.proxy.host,
+            port=config.proxy.port
+        )
+        return server
+    return None
+
 def run_proxy_mode():
     """
     Run the agent in Proxy Mode using AgentServer
     This exposes the agent via HTTP endpoint for Agentverse
     """
     try:
-        logger.info("=" * 60)
-        logger.info("🌐 STARTING PROXY MODE SERVER")
-        logger.info("=" * 60)
-        logger.info(f"✅ Agent Address: {spartan_agent.address}")
-        logger.info(f"✅ Endpoint: {config.proxy.endpoint or 'internal mode'}")
-        logger.info(f"✅ Host: {config.proxy.host}")
-        logger.info(f"✅ Port: {config.proxy.port}")
-        logger.info("=" * 60)
-
-        if config.proxy.enabled:
-            # Use AgentServer for Proxy Mode
-            server = AgentServer(
-                agent=spartan_agent,
-                host=config.proxy.host,
-                port=config.proxy.port
-            )
+        server = get_server()
+        if server:
+            logger.info("=" * 60)
+            logger.info("🌐 STARTING PROXY MODE SERVER")
             logger.info("🚀 AgentServer created for proxy mode")
+            logger.info("=" * 60)
             server.run()
         else:
             # Local mode without proxy
