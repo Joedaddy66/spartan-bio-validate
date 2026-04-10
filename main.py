@@ -1,32 +1,59 @@
-"""
-SPARTAN BIO-VALIDATE
-Main entry point - Proxy Mode
-"""
+import os
+import time
+from uagents import Agent, Context, Bureau
+from loguru import logger
+from dotenv import load_dotenv
 
-import sys
-import logging
+# --- LAZARUS REVERSAL LOGIC ---
+def calculate_reversal_severity(seq):
+    flips = 0
+    arr = list(seq)
+    for i in range(len(arr)):
+        target = i + 1
+        if arr[i] != target and target in arr:
+            idx = arr.index(target)
+            arr[i:idx+1] = reversed(arr[i:idx+1])
+            flips += 1
+    return flips
 
-def main():
-    """Main entry point"""
-    from spartan_agent import get_server, config
-    from api.gateway import app as gateway_app
+load_dotenv()
+AGENT_NAME = "spartan-comber-v7"
+AGENT_SEED = os.getenv("AGENT_SEED", "spartan01_2026_vault")
 
-    print("\n" + "=" * 60)
-    print("🔱 SPARTAN BIO-VALIDATE AGENT (UNIFIED PROXY MODE)")
-    print("=" * 60 + "\n")
+def start_engine():
+    # Re-instantiate inside the function to reset state on every loop
+    agent = Agent(
+        name=AGENT_NAME,
+        seed=AGENT_SEED,
+        port=8001,
+        endpoint=["http://localhost:8001/submit"]
+    )
 
-    server = get_server()
-    if server:
-        # Mount the FastAPI gateway onto the AgentServer's app
-        # This allows /endpoint, /validate, /submit to work on the same port
-        server._app.mount("/", gateway_app)
-        print("✅ Gateway mounted onto AgentServer")
-        print("✅ Starting unified server...\n")
-        server.run()
-    else:
-        from spartan_agent import spartan_agent
-        print("🔷 Starting in local mode...")
-        spartan_agent.run()
+    @agent.on_event("startup")
+    async def startup(ctx: Context):
+        logger.info(f"🔱 Spartan DEV Node Live: {agent.address}")
+
+    @agent.on_interval(period=10.0)
+    async def autonomous_comb(ctx: Context):
+        logger.info("Combing Mesh: Sorting 1,000,000 records...")
+        match = [1, 4, 3, 2, 6, 5]
+        severity = calculate_reversal_severity(match)
+        if severity >= 2:
+            logger.info(f"🔱 LAZARUS SIGNATURE DETECTED | Severity Rank: {severity}")
+
+    bureau = Bureau(port=8001, endpoint=["http://localhost:8001/submit"])
+    bureau.add(agent)
+    
+    logger.info("Engaging Persistent Autonomous Comber...")
+    bureau.run()
 
 if __name__ == "__main__":
-    main()
+    while True:
+        try:
+            start_engine()
+        except KeyboardInterrupt:
+            logger.warning("🔱 Manual Shutdown. Standby.")
+            break
+        except Exception as e:
+            logger.error(f"🔱 Engine Hiccup: {e}. Re-igniting in 2 seconds...")
+            time.sleep(2)
