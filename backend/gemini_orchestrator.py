@@ -10,7 +10,7 @@ class GeminiOrchestrator:
     def __init__(self, config: Dict[str, Any]):
         self.config = config
         self.api_key = os.getenv("GEMINI_API_KEY")
-        self.model = "gemini-3.1-pro"
+        self.model = "gemini-2.0-flash"
         
         self.available_functions = {
             "get_dynamic_quote": {

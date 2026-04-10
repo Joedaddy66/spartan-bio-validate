@@ -2,13 +2,17 @@
 NEXT_PUBLIC_RAILWAY_API_URL = "https://spartan-bio-validate-production.up.railway.app"
 
 [phases.setup]
-nixPkgs = ["nodejs"]
+nixPkgs = ["nodejs", "python3", "pip"]
 
 [phases.install]
-cmds = ["cd frontend && npm install"]
+cmds = [
+    "pip install -r requirements.txt",
+    "cd frontend && npm install"
+]
 
 [phases.build]
 cmds = ["cd frontend && npm run build"]
 
-[start]
-cmd = "cd frontend && npm run start"
+# NOTE: [start] is intentionally omitted — Railway uses the Procfile.
+# web:    uvicorn api.gateway:app --host 0.0.0.0 --port $PORT
+# worker: celery -A core.celery_app worker --loglevel=info
