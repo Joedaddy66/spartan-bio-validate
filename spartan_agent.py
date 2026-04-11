@@ -10,8 +10,7 @@ from uagents_core.utils.registration import (
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
 
-# 🔱 Initialize the Agent
-# In 0.24.0+, providing a port automatically starts the internal REST server
+# 🔱 Initialize the Spartan Agent
 spartan_agent = Agent(
     name=os.getenv("AGENT_NAME", "spartan_bio_validate"),
     seed=os.getenv("AGENT_SEED_PHRASE"),
@@ -23,14 +22,14 @@ spartan_agent = Agent(
 async def on_startup(ctx: Context):
     logger.info(f"🔱 SPARTAN IDENTITY: {spartan_agent.address}")
     
-    # 🔱 The Master Handshake with Agentverse
+    # 🔱 The Master Handshake using AGENTVERSE_API
     try:
         register_chat_agent(
             "SPOPS_PROXY",
             f"{os.getenv('RAILWAY_URL')}/endpoint",
             active=True,
             credentials=RegistrationRequestCredentials(
-                agentverse_api_key=os.environ["AGENTVERSE_KEY"],
+                agentverse_api_key=os.environ["AGENTVERSE_API"],
                 agent_seed_phrase=os.environ["AGENT_SEED_PHRASE"],        
             ),
         )
@@ -43,5 +42,4 @@ async def heartbeat(ctx: Context):
     logger.info("💓 [SPOPS HEARTBEAT] Proxy Mesh Nominal")
 
 if __name__ == "__main__":
-    # 🔱 .run() starts the agent and the internal server on the port specified above
     spartan_agent.run()
