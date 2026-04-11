@@ -4,8 +4,5 @@ nixPkgs = ["python311", "gcc", "stdenv.cc.cc.lib"]
 [phases.install]
 cmds = ["python -m venv /opt/venv && /opt/venv/bin/pip install -r requirements.txt"]
 
-[phases.build]
-cmds = ["echo 'Building Spartan Engine with C++ Support...'"]
-
 [start]
 cmd = "export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/nix/store/$(ls /nix/store | grep stdenv-linux | head -n 1)/lib && /opt/venv/bin/python spartan_agent.py"
