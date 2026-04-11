@@ -1,7 +1,8 @@
-uagents
-uagents-core
+grpcio==1.60.0
+uagents==0.24.1
+cosmpy<0.12.0,>=0.11.0
 fastapi
 uvicorn
-loguru
-python-dotenv
 google-generativeai
+python-dotenv
+loguru

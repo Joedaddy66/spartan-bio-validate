@@ -1,13 +1,12 @@
 [phases.setup]
-nixPkgs = ["python311", "gcc", "stdenv.cc.cc.lib", "cmake", "zlib"]
+nixPkgs = ["python311", "stdenv.cc.cc.lib"]
 
 [phases.install]
 cmds = [
   "python -m venv /opt/venv",
-  "/opt/venv/bin/pip install --upgrade pip setuptools==68.0.0 wheel",
-  "GRPC_PYTHON_BUILD_SYSTEM_ZLIB=true /opt/venv/bin/pip install grpcio==1.60.0 --no-binary grpcio --no-build-isolation",
+  "/opt/venv/bin/pip install --upgrade pip setuptools wheel",
   "/opt/venv/bin/pip install -r requirements.txt"
 ]
 
 [start]
-cmd = "/opt/venv/bin/python spartan_agent.py"
+cmd = "export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/nix/store/$(ls /nix/store | grep stdenv-linux | head -n 1)/lib && /opt/venv/bin/python spartan_agent.py"
