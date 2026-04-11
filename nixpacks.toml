@@ -4,7 +4,7 @@ nixPkgs = ["python311", "gcc", "stdenv.cc.cc.lib", "cmake", "zlib"]
 [phases.install]
 cmds = [
   "python -m venv /opt/venv",
-  "/opt/venv/bin/pip install --upgrade pip",
+  "/opt/venv/bin/pip install --upgrade pip setuptools==68.0.0 wheel",
   "GRPC_PYTHON_BUILD_SYSTEM_ZLIB=true /opt/venv/bin/pip install grpcio==1.60.0 --no-binary grpcio",
   "/opt/venv/bin/pip install -r requirements.txt"
 ]
