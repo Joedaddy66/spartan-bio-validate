@@ -1,0 +1,6 @@
+[build]
+builder = "DOCKERFILE"
+
+[deploy]
+startCommand = "python spartan_agent.py"
+restartPolicy = "always"
