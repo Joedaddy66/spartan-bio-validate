@@ -1,5 +1,4 @@
 uagents
-uagents-ai
 uagents-core
 fastapi
 uvicorn
